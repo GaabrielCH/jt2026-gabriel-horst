@@ -1,0 +1,73 @@
+modelo,variavel,coef_padron,p
+A) log(ADR) — o que permite cobrar caro,is_professional,0.11082560276415485,0.001960650471883382
+A) log(ADR) — o que permite cobrar caro,number_of_guests,0.10018143274786741,1.6916982139333496e-05
+A) log(ADR) — o que permite cobrar caro,number_of_bedrooms,0.0927271416864874,0.002843405308317696
+A) log(ADR) — o que permite cobrar caro,number_of_bathrooms,0.09070570567191798,3.176831515074558e-05
+A) log(ADR) — o que permite cobrar caro,log_reviews,-0.0679925864039648,0.00035244687332156504
+A) log(ADR) — o que permite cobrar caro,am_piscina,0.0635071995097124,0.06765231089693924
+A) log(ADR) — o que permite cobrar caro,am_vista_mar,0.05910185450060248,4.067818584528169e-05
+A) log(ADR) — o que permite cobrar caro,star_rating_f,0.04239653954234838,0.0031837789411946053
+A) log(ADR) — o que permite cobrar caro,bairro_Morretes,-0.04172326725481708,0.003882617975845113
+A) log(ADR) — o que permite cobrar caro,picture_count,0.03802799310438713,0.039818473286462104
+A) log(ADR) — o que permite cobrar caro,is_guest_favorite,-0.035167148402648535,0.02926638015249527
+A) log(ADR) — o que permite cobrar caro,is_superhost,-0.03305560848425456,0.054985454454030615
+A) log(ADR) — o que permite cobrar caro,am_beira_mar,0.031574666594337185,0.030828088300443833
+A) log(ADR) — o que permite cobrar caro,bairro_Outro,-0.024942028066540292,0.09090717721672033
+A) log(ADR) — o que permite cobrar caro,bairro_Centro,-0.0234922737279431,0.2563552440873206
+A) log(ADR) — o que permite cobrar caro,am_churrasqueira,0.02339161779123871,0.10947021348295502
+A) log(ADR) — o que permite cobrar caro,cleaning_fee,0.016780826597927588,0.3700816811536449
+A) log(ADR) — o que permite cobrar caro,am_academia,-0.01597163408970978,0.6388253972551513
+A) log(ADR) — o que permite cobrar caro,am_elevador,-0.015955257323193247,0.27321338495897707
+A) log(ADR) — o que permite cobrar caro,am_estacionamento,0.015537078986211272,0.1218882810747229
+A) log(ADR) — o que permite cobrar caro,am_maq_lavar,0.015506177776987312,0.27112737903240136
+A) log(ADR) — o que permite cobrar caro,tem_rating,-0.008050810413191292,0.6488434596895568
+A) log(ADR) — o que permite cobrar caro,host_multi,-0.007109319803984956,0.8136380370850365
+A) log(ADR) — o que permite cobrar caro,can_instant_book,0.0009343896830246792,0.9570705100880493
+B) pickup ajustado — o que faz vender rapido,am_elevador,0.027175600078723123,0.0044355635647051
+B) pickup ajustado — o que faz vender rapido,am_piscina,0.025661347207576134,0.3146114849517705
+B) pickup ajustado — o que faz vender rapido,number_of_bedrooms,0.02171927867625374,0.33087046493221706
+B) pickup ajustado — o que faz vender rapido,is_superhost,0.02153544157245447,0.055570435711044606
+B) pickup ajustado — o que faz vender rapido,am_academia,-0.02123479342095907,0.3248452533714251
+B) pickup ajustado — o que faz vender rapido,number_of_bathrooms,-0.01665851853204017,0.1740582231415394
+B) pickup ajustado — o que faz vender rapido,host_multi,0.01281061692537608,0.563097066521433
+B) pickup ajustado — o que faz vender rapido,is_guest_favorite,0.011888112165185127,0.24004220511174634
+B) pickup ajustado — o que faz vender rapido,number_of_guests,-0.011530807801096183,0.4482970812205902
+B) pickup ajustado — o que faz vender rapido,star_rating_f,-0.010942216672007189,0.27290011551505744
+B) pickup ajustado — o que faz vender rapido,tem_rating,0.010888185998226994,0.031335209956844946
+B) pickup ajustado — o que faz vender rapido,am_churrasqueira,0.010761200305218576,0.276825634724135
+B) pickup ajustado — o que faz vender rapido,am_beira_mar,0.010294287408447862,0.27414753002182424
+B) pickup ajustado — o que faz vender rapido,picture_count,0.009949448160379928,0.5448311279390661
+B) pickup ajustado — o que faz vender rapido,bairro_Outro,-0.009781491786993746,0.1632530354441305
+B) pickup ajustado — o que faz vender rapido,am_maq_lavar,-0.00943253168791789,0.5356471590420937
+B) pickup ajustado — o que faz vender rapido,cleaning_fee,-0.009416458977650314,0.3312156568736462
+B) pickup ajustado — o que faz vender rapido,bairro_Morretes,-0.008064627416552147,0.41574296390427334
+B) pickup ajustado — o que faz vender rapido,can_instant_book,-0.006876939681000247,0.5243034313259434
+B) pickup ajustado — o que faz vender rapido,is_professional,-0.002368706745853994,0.9101349086743764
+B) pickup ajustado — o que faz vender rapido,bairro_Centro,-0.0007485159989534304,0.9473429335222523
+B) pickup ajustado — o que faz vender rapido,am_estacionamento,0.0007076211695596277,0.9248388986270017
+B) pickup ajustado — o que faz vender rapido,log_reviews,-0.000660901739924089,0.9569724693793181
+B) pickup ajustado — o que faz vender rapido,am_vista_mar,-0.00021090030334277405,0.9846776660933039
+C) RevPAN (preco x velocidade) — efeito liquido,number_of_bedrooms,23.68035991971127,0.10602957292883687
+C) RevPAN (preco x velocidade) — efeito liquido,am_academia,-20.905837363743817,0.15742722273432375
+C) RevPAN (preco x velocidade) — efeito liquido,am_piscina,18.773653895950442,0.12072706761102776
+C) RevPAN (preco x velocidade) — efeito liquido,am_elevador,17.063282723857373,0.003744780474079853
+C) RevPAN (preco x velocidade) — efeito liquido,is_professional,16.737391613750173,0.47815598904159073
+C) RevPAN (preco x velocidade) — efeito liquido,is_superhost,15.520368038211025,0.07360591941194243
+C) RevPAN (preco x velocidade) — efeito liquido,am_beira_mar,8.859587369637488,0.14603326079514106
+C) RevPAN (preco x velocidade) — efeito liquido,am_vista_mar,7.49670312383079,0.2937987826570795
+C) RevPAN (preco x velocidade) — efeito liquido,bairro_Centro,6.655926854851807,0.5294033803427209
+C) RevPAN (preco x velocidade) — efeito liquido,am_churrasqueira,6.581876896225039,0.2867107211451235
+C) RevPAN (preco x velocidade) — efeito liquido,bairro_Outro,-6.1712903620519635,0.0919458358629171
+C) RevPAN (preco x velocidade) — efeito liquido,number_of_guests,-5.445277899054408,0.6064340510496441
+C) RevPAN (preco x velocidade) — efeito liquido,am_maq_lavar,-4.923916263288378,0.515464212997239
+C) RevPAN (preco x velocidade) — efeito liquido,tem_rating,4.910773326011157,0.15306657773776094
+C) RevPAN (preco x velocidade) — efeito liquido,bairro_Morretes,-4.69292977484543,0.5353804181916649
+C) RevPAN (preco x velocidade) — efeito liquido,cleaning_fee,-4.50816225858806,0.4360319749152365
+C) RevPAN (preco x velocidade) — efeito liquido,can_instant_book,-4.4006286882904915,0.5910934392641112
+C) RevPAN (preco x velocidade) — efeito liquido,is_guest_favorite,3.8780529633426246,0.5676017766687022
+C) RevPAN (preco x velocidade) — efeito liquido,star_rating_f,-2.893269120906039,0.6375408723066676
+C) RevPAN (preco x velocidade) — efeito liquido,am_estacionamento,2.1731964731507287,0.555742350176792
+C) RevPAN (preco x velocidade) — efeito liquido,log_reviews,-1.241668924840118,0.8856883284243042
+C) RevPAN (preco x velocidade) — efeito liquido,picture_count,0.8491362009201877,0.9283509856776088
+C) RevPAN (preco x velocidade) — efeito liquido,number_of_bathrooms,0.4931670343425218,0.9536428735207216
+C) RevPAN (preco x velocidade) — efeito liquido,host_multi,-0.13922413229362066,0.99411528215066

@@ -1,0 +1,59 @@
+# ---------------------------------------------------------------------------
+# Python
+# ---------------------------------------------------------------------------
+__pycache__/
+*.py[cod]
+*.egg-info/
+.ipynb_checkpoints/
+
+# ambientes virtuais
+.venv/
+venv/
+env/
+ENV/
+
+# ---------------------------------------------------------------------------
+# Credenciais e segredos — NUNCA commitar
+# ---------------------------------------------------------------------------
+.env
+.env.*
+*.pem
+*.key
+credentials.json
+secrets.*
+
+# ---------------------------------------------------------------------------
+# Sistema operacional / editor
+# ---------------------------------------------------------------------------
+.DS_Store
+Thumbs.db
+desktop.ini
+*.swp
+*~
+.idea/
+.vscode/
+
+# ---------------------------------------------------------------------------
+# Ferramentas de andaime que nao fazem parte da entrega
+# (CLAUDE.md fica versionado de proposito: documenta como a IA foi configurada)
+# ---------------------------------------------------------------------------
+.claude/
+openspec/
+
+# ---------------------------------------------------------------------------
+# Saidas intermediarias GRANDES da analise (~21 MB, 100% regeneraveis)
+#
+# Sao recriadas rodando o pipeline de analise/ do zero em ~1 minuto.
+# Os arquivos de RESULTADO, que sustentam as tabelas do relatorio, continuam
+# versionados de proposito — ver analise/saida/ no repositorio:
+#   rank_bairros.csv, rank_celulas.csv, rank_quartos.csv,
+#   matriz_investimento.csv, matriz_investimento_corrigida.csv,
+#   drivers_coeficientes.csv, robustez_modelos.csv,
+#   teste_tese_celulas.csv, pickup_por_data.csv, log_limpeza.txt
+# ---------------------------------------------------------------------------
+analise/saida/det_limpo.csv
+analise/saida/price_limpo.csv
+analise/saida/vr_limpo.csv
+analise/saida/metricas_listing.csv
+analise/saida/noites_pickup.csv
+analise/saida/noites_fev.csv

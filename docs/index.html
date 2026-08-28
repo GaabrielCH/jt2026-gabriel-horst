@@ -1,0 +1,802 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Itapema/SC — Recomendação de investimento | Seazone</title>
+<meta name="description" content="Análise de 4.441 anúncios de Airbnb e 5.865 apartamentos à venda em Itapema/SC. Recomendação de investimento e posição sobre a tese dos compactos no Centro.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap" rel="stylesheet">
+<style>
+/* ============================================================ tokens
+   Carta náutica: papel verde-azulado frio, água profunda, sondagens em
+   âmbar, perigos em vermelho de carta. Nada de creme editorial. */
+:root{
+  --deep:#072430;         /* água profunda — fundos escuros */
+  --shoal:#0E3A49;        /* baixio — superfície elevada escura */
+  --chart:#E7EFEC;        /* papel de carta */
+  --chart-2:#F4F8F6;      /* papel elevado */
+  --ink:#06181F;          /* tinta */
+  --ink-2:#3D565F;        /* tinta secundária */
+  --buoy:#E0A340;         /* boia / farol — referência, atenção */
+  --hazard:#C8453E;       /* perigo — rejeição */
+  --safe:#2E8B72;         /* sonda segura — confirmação */
+  --rule:rgba(6,24,31,.13);
+  --rule-strong:rgba(6,24,31,.28);
+  --rule-dark:rgba(231,239,236,.16);
+
+  --display:'Archivo','Helvetica Neue',Arial,sans-serif;
+  --body:'Source Serif 4',Georgia,'Times New Roman',serif;
+  --mono:'IBM Plex Mono','SFMono-Regular',Consolas,monospace;
+
+  --rail:264px;
+  --pad:clamp(20px,4vw,60px);
+}
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0; background:var(--chart); color:var(--ink);
+  font-family:var(--body); font-size:17px; line-height:1.62;
+  font-variant-numeric:tabular-nums;
+}
+h1,h2,h3,h4{font-family:var(--display); font-weight:700; letter-spacing:-.022em; margin:0; text-wrap:balance}
+p{margin:0 0 1.05em}
+a{color:inherit}
+strong{font-weight:600}
+
+/* sondagens: todo número é mono */
+.num,td.n,th.n{font-family:var(--mono); font-variant-numeric:tabular-nums}
+
+/* ============================================================ layout */
+.shell{display:flex; min-height:100vh}
+
+/* -------- rail de navegação (curvas de nível) */
+.rail{
+  width:var(--rail); flex:0 0 var(--rail); background:var(--deep); color:var(--chart);
+  position:sticky; top:0; height:100vh; overflow-y:auto;
+  padding:30px 0 26px; display:flex; flex-direction:column;
+}
+.rail-head{padding:0 24px 22px; border-bottom:1px solid var(--rule-dark)}
+.rail-mark{
+  font-family:var(--mono); font-size:10.5px; letter-spacing:.16em; text-transform:uppercase;
+  color:var(--buoy); display:block; margin-bottom:10px;
+}
+.rail-title{font-size:19px; line-height:1.22; color:var(--chart)}
+.rail-sub{font-family:var(--mono); font-size:11px; color:rgba(231,239,236,.55); margin-top:8px; line-height:1.5}
+nav.rail-nav{padding:14px 0 0; flex:1}
+.navlink{
+  display:flex; gap:12px; align-items:baseline; width:100%; text-align:left;
+  background:none; border:0; border-left:2px solid transparent;
+  padding:9px 24px; color:rgba(231,239,236,.66); cursor:pointer;
+  font-family:var(--display); font-size:14.5px; font-weight:500; letter-spacing:-.01em;
+  transition:color .16s, border-color .16s, background .16s;
+}
+.navlink .dep{font-family:var(--mono); font-size:10.5px; color:rgba(231,239,236,.34); letter-spacing:.04em}
+.navlink:hover{color:var(--chart); background:rgba(231,239,236,.05)}
+.navlink[aria-current="true"]{color:var(--chart); border-left-color:var(--buoy); background:rgba(224,163,64,.09)}
+.navlink[aria-current="true"] .dep{color:var(--buoy)}
+.rail-foot{padding:18px 24px 0; border-top:1px solid var(--rule-dark); margin-top:14px}
+.rail-foot a{
+  display:block; font-family:var(--mono); font-size:11.5px; color:rgba(231,239,236,.6);
+  text-decoration:none; padding:5px 0; transition:color .15s;
+}
+.rail-foot a:hover{color:var(--buoy)}
+
+/* -------- nav mobile */
+.mobnav{display:none}
+
+/* -------- painel principal */
+main{flex:1; min-width:0; padding:0 var(--pad) 100px}
+.sheet{display:none; max-width:960px; margin:0 auto; padding-top:clamp(34px,5vw,64px)}
+.sheet.on{display:block; animation:rise .34s cubic-bezier(.22,.7,.3,1) both}
+@keyframes rise{from{opacity:0; transform:translateY(9px)} to{opacity:1; transform:none}}
+
+.eyebrow{
+  font-family:var(--mono); font-size:11px; letter-spacing:.15em; text-transform:uppercase;
+  color:var(--ink-2); display:flex; align-items:center; gap:11px; margin-bottom:16px;
+}
+.eyebrow::after{content:""; flex:1; height:1px; background:var(--rule)}
+h2.sh{font-size:clamp(30px,4.4vw,46px); line-height:1.05; margin-bottom:14px}
+h3.sub{font-size:clamp(18px,2.2vw,22px); margin:44px 0 14px; letter-spacing:-.015em}
+.lede{font-size:clamp(18px,2vw,20.5px); line-height:1.55; color:var(--ink); max-width:66ch}
+.note{font-size:14.5px; color:var(--ink-2); line-height:1.55; max-width:74ch}
+
+/* ============================================================ hero */
+.hero{background:var(--deep); color:var(--chart); margin:0 calc(-1*var(--pad)) 0; padding:clamp(40px,6vw,74px) var(--pad) clamp(34px,5vw,58px)}
+.hero-in{max-width:960px; margin:0 auto}
+.hero .eyebrow{color:rgba(231,239,236,.62)}
+.hero .eyebrow::after{background:var(--rule-dark)}
+.verdict-h{font-size:clamp(40px,7.6vw,82px); line-height:.97; letter-spacing:-.038em; color:var(--chart)}
+.verdict-h em{font-style:normal; color:var(--buoy)}
+.hero-p{font-family:var(--body); font-size:clamp(17px,2vw,19.5px); line-height:1.55; color:rgba(231,239,236,.82); max-width:60ch; margin:20px 0 0}
+
+/* ============================================================ régua do custo de oportunidade (signature) */
+.ruler{margin:34px 0 6px; background:var(--chart-2); border:1px solid var(--rule); padding:clamp(20px,3vw,30px)}
+.ruler-head{display:flex; justify-content:space-between; align-items:baseline; gap:16px; flex-wrap:wrap; margin-bottom:6px}
+.ruler-title{font-family:var(--display); font-size:16px; font-weight:600; letter-spacing:-.01em}
+.ruler-key{font-family:var(--mono); font-size:11px; color:var(--ink-2)}
+.ruler-scale{position:relative; height:16px; margin:16px 0 4px; border-bottom:1px solid var(--rule-strong)}
+.tick{position:absolute; bottom:0; transform:translateX(-50%); font-family:var(--mono); font-size:10px; color:var(--ink-2)}
+.tick::after{content:""; position:absolute; left:50%; bottom:-5px; width:1px; height:5px; background:var(--rule-strong)}
+.bars{position:relative}
+.waterline{position:absolute; top:-4px; bottom:16px; right:0; width:2px; background:var(--buoy)}
+.waterline span{
+  position:absolute; top:-2px; right:0; transform:translateX(calc(100% - 2px));
+  background:var(--buoy); color:var(--deep); font-family:var(--mono); font-size:10.5px;
+  font-weight:600; padding:3px 7px; white-space:nowrap; letter-spacing:.04em;
+}
+.bar-row{display:grid; grid-template-columns:150px 1fr 62px; gap:12px; align-items:center; padding:6px 0}
+.bar-lab{font-family:var(--mono); font-size:12px; color:var(--ink); line-height:1.3}
+.bar-lab i{font-style:normal; color:var(--ink-2)}
+.bar-track{height:19px; background:rgba(6,24,31,.055); position:relative}
+.bar-fill{height:100%; background:var(--shoal); width:0; transition:width .85s cubic-bezier(.2,.75,.3,1)}
+.on .bar-fill{width:var(--w)}
+.bar-row.lead .bar-fill{background:var(--safe)}
+.bar-val{font-family:var(--mono); font-size:13px; font-weight:600; text-align:right}
+.ruler-foot{font-family:var(--mono); font-size:11.5px; color:var(--ink-2); margin-top:14px; line-height:1.55; border-top:1px solid var(--rule); padding-top:12px}
+
+/* ============================================================ blocos de destaque */
+.hazard{
+  border:1px solid var(--hazard); border-left-width:4px; background:rgba(200,69,62,.045);
+  padding:clamp(20px,3vw,28px); margin:26px 0;
+}
+.hazard-tag{
+  display:inline-block; font-family:var(--mono); font-size:11px; letter-spacing:.17em;
+  text-transform:uppercase; color:#fff; background:var(--hazard); padding:5px 11px; margin-bottom:14px;
+}
+.hazard h3{font-size:clamp(22px,3vw,30px); line-height:1.12; margin-bottom:10px}
+.hazard p:last-child{margin-bottom:0}
+
+.buoybox{border:1px solid var(--buoy); border-left-width:4px; background:rgba(224,163,64,.08); padding:clamp(18px,2.6vw,26px); margin:24px 0}
+.buoybox p:last-child{margin-bottom:0}
+.buoybox .t{font-family:var(--display); font-weight:700; font-size:17px; margin-bottom:8px; display:block}
+
+.callout{border-left:3px solid var(--rule-strong); padding:2px 0 2px 18px; margin:22px 0; color:var(--ink-2); font-size:16px}
+
+/* ============================================================ tabelas (sondagens) */
+.tw{overflow-x:auto; margin:18px 0 8px; border:1px solid var(--rule); background:var(--chart-2)}
+table{border-collapse:collapse; width:100%; min-width:520px}
+caption{
+  text-align:left; font-family:var(--mono); font-size:11px; letter-spacing:.12em; text-transform:uppercase;
+  color:var(--ink-2); padding:13px 15px; border-bottom:1px solid var(--rule);
+}
+th,td{padding:9px 15px; text-align:left; border-bottom:1px solid var(--rule); font-size:14.5px}
+thead th{
+  font-family:var(--mono); font-size:10.5px; letter-spacing:.09em; text-transform:uppercase;
+  color:var(--ink-2); font-weight:500; background:rgba(6,24,31,.035); white-space:nowrap;
+}
+td.n,th.n{text-align:right; font-size:13.5px}
+tbody tr:last-child td{border-bottom:0}
+tbody tr.hi{background:rgba(46,139,114,.09)}
+tbody tr.bad{background:rgba(200,69,62,.06)}
+tbody tr:hover{background:rgba(6,24,31,.03)}
+tbody tr.hi:hover{background:rgba(46,139,114,.14)}
+td .tag{font-family:var(--mono); font-size:10px; letter-spacing:.06em; color:var(--hazard); text-transform:uppercase}
+td i{font-style:normal; color:var(--ink-2); font-size:11.5px}
+code{font-family:var(--mono); font-size:.88em; background:rgba(6,24,31,.06); padding:1px 5px}
+.tnote{font-family:var(--mono); font-size:11.5px; color:var(--ink-2); line-height:1.55; margin:0 0 26px; padding-left:2px}
+
+/* ============================================================ grade de fatos */
+.facts{display:grid; grid-template-columns:repeat(auto-fit,minmax(168px,1fr)); gap:1px; background:var(--rule); border:1px solid var(--rule); margin:24px 0}
+.fact{background:var(--chart-2); padding:17px 18px}
+.fact .k{font-family:var(--mono); font-size:10.5px; letter-spacing:.1em; text-transform:uppercase; color:var(--ink-2); display:block; margin-bottom:7px; line-height:1.4}
+.fact .v{font-family:var(--display); font-size:clamp(24px,3vw,31px); font-weight:700; letter-spacing:-.03em; line-height:1}
+.fact .v small{font-size:.5em; font-weight:600; letter-spacing:0; color:var(--ink-2)}
+.fact.warn .v{color:var(--hazard)}
+.fact.good .v{color:var(--safe)}
+
+/* lista de evidências numeradas — a ordem aqui é argumentativa, não decorativa */
+ol.ev{list-style:none; counter-reset:e; padding:0; margin:20px 0}
+ol.ev li{counter-increment:e; position:relative; padding:0 0 18px 46px; margin-bottom:18px; border-bottom:1px solid var(--rule)}
+ol.ev li:last-child{border-bottom:0; margin-bottom:0; padding-bottom:0}
+ol.ev li::before{
+  content:counter(e); position:absolute; left:0; top:1px; font-family:var(--mono); font-size:11px;
+  color:var(--buoy); border:1px solid var(--buoy); width:26px; height:26px;
+  display:grid; place-items:center; font-weight:600;
+}
+ol.ev b{font-family:var(--display); font-weight:700; letter-spacing:-.01em}
+
+hr.rule{border:0; border-top:1px solid var(--rule); margin:44px 0}
+
+.foot{max-width:960px; margin:60px auto 0; padding-top:22px; border-top:1px solid var(--rule); font-family:var(--mono); font-size:11.5px; color:var(--ink-2); line-height:1.7}
+.foot a{color:var(--ink)}
+
+/* ============================================================ responsivo */
+@media (max-width:900px){
+  .shell{flex-direction:column}
+  .rail{position:static; width:auto; height:auto; flex:none; padding:22px 0 0}
+  .rail-head{padding:0 var(--pad) 18px}
+  nav.rail-nav{display:none}
+  .rail-foot{padding:14px var(--pad) 16px; margin-top:0}
+  .rail-foot a{display:inline-block; margin-right:18px}
+  .mobnav{
+    display:flex; gap:0; overflow-x:auto; background:var(--deep); position:sticky; top:0; z-index:20;
+    border-top:1px solid var(--rule-dark); -webkit-overflow-scrolling:touch;
+  }
+  .mobnav button{
+    flex:0 0 auto; background:none; border:0; border-bottom:2px solid transparent; color:rgba(231,239,236,.6);
+    font-family:var(--display); font-size:13.5px; font-weight:500; padding:12px 15px; white-space:nowrap; cursor:pointer;
+  }
+  .mobnav button[aria-current="true"]{color:var(--buoy); border-bottom-color:var(--buoy)}
+  .bar-row{grid-template-columns:118px 1fr 54px; gap:9px}
+  .bar-lab{font-size:11px}
+  main{padding-bottom:70px}
+}
+@media (max-width:520px){
+  body{font-size:16px}
+  .bar-row{grid-template-columns:1fr; gap:3px}
+  .bar-val{text-align:left}
+  .waterline{display:none}
+}
+@media (prefers-reduced-motion:reduce){
+  *{animation-duration:.001ms !important; transition-duration:.001ms !important}
+  .bar-fill{width:var(--w)}
+}
+:focus-visible{outline:2px solid var(--buoy); outline-offset:2px}
+@media print{.rail,.mobnav{display:none} .sheet{display:block !important}}
+</style>
+</head>
+<body>
+
+<div class="shell">
+
+  <aside class="rail">
+    <div class="rail-head">
+      <span class="rail-mark">Jovens Talentos 2026 · Seazone</span>
+      <h1 class="rail-title">Onde investir em Itapema/SC</h1>
+      <p class="rail-sub">4.441 anúncios de Airbnb<br>5.865 apartamentos à venda<br>Gabriel Horst</p>
+    </div>
+
+    <nav class="rail-nav" aria-label="Seções da análise">
+      <button class="navlink" data-go="resumo"  aria-current="true"><span class="dep">00</span> Resumo</button>
+      <button class="navlink" data-go="perfil"><span class="dep">01</span> Perfil do imóvel</button>
+      <button class="navlink" data-go="local"><span class="dep">02</span> Localização</button>
+      <button class="navlink" data-go="drivers"><span class="dep">03</span> O que explica a receita</button>
+      <button class="navlink" data-go="retorno"><span class="dep">04</span> Retorno</button>
+      <button class="navlink" data-go="tese"><span class="dep">05</span> Tese dos compactos</button>
+      <button class="navlink" data-go="limites"><span class="dep">06</span> Limites</button>
+    </nav>
+
+    <div class="rail-foot">
+      <a href="../relatorio.md">Relatório completo (fonte) ↗</a>
+      <a href="../README.md">README do repositório ↗</a>
+      <a href="../ai-log/">Conversa com a IA ↗</a>
+    </div>
+  </aside>
+
+  <div style="flex:1; min-width:0">
+  <div class="mobnav" role="tablist" aria-label="Seções"></div>
+  <main>
+
+    <!-- ================================================= RESUMO -->
+    <section class="sheet on" id="resumo">
+      <div class="hero">
+        <div class="hero-in">
+          <div class="eyebrow">Recomendação</div>
+          <h2 class="verdict-h">2 quartos.<br>Não <em>studio</em>.</h2>
+          <p class="hero-p">A tipologia é a conclusão firme desta análise. O bairro não é —
+          e a pergunta que decide tudo não é nenhuma das duas.</p>
+        </div>
+      </div>
+
+      <h3 class="sub">Três respostas, em ordem de importância</h3>
+
+      <ol class="ev">
+        <li><b>O perfil está resolvido.</b> Apartamento de 2 quartos, ~85 m².
+          O degrau de retorno entre 2 quartos (≈5,6%) e 3 quartos (≈4,0%) é
+          <strong>quatro vezes maior</strong> que qualquer diferença entre bairros.</li>
+        <li><b>O bairro não está.</b> Morretes 5,67%, Centro 5,57%, Meia Praia 5,50%.
+          Dezessete centésimos de ponto separam o primeiro do terceiro — isso é ruído,
+          não diferença. Quem afirmar “o Centro é o melhor bairro” está lendo precisão
+          que os dados não têm.</li>
+        <li><b>E o investimento não fecha por renda.</b> Com a Selic em 14,00%, o melhor
+          imóvel da matriz entrega <strong>41% do que o mesmo capital renderia no CDI</strong>,
+          sem risco e sem operação.</li>
+      </ol>
+
+      <!-- ---------- SIGNATURE: régua do custo de oportunidade ---------- -->
+      <div class="ruler">
+        <div class="ruler-head">
+          <span class="ruler-title">Régua do custo de oportunidade</span>
+          <span class="ruler-key">ROI operacional líquido · cenário base 55% · a.a.</span>
+        </div>
+        <div class="ruler-scale" aria-hidden="true">
+          <span class="tick" style="left:0">0%</span>
+          <span class="tick" style="left:25%">3,5%</span>
+          <span class="tick" style="left:50%">7,0%</span>
+          <span class="tick" style="left:75%">10,4%</span>
+          <span class="tick" style="left:100%">13,9%</span>
+        </div>
+        <div class="bars">
+          <div class="waterline" aria-hidden="true"><span>CDI 13,90%</span></div>
+          <div class="bar-row lead"><span class="bar-lab">Morretes <i>2 quartos</i></span><span class="bar-track"><span class="bar-fill" style="--w:40.8%"></span></span><span class="bar-val">5,67%</span></div>
+          <div class="bar-row"><span class="bar-lab">Centro <i>2 quartos</i></span><span class="bar-track"><span class="bar-fill" style="--w:40.1%"></span></span><span class="bar-val">5,57%</span></div>
+          <div class="bar-row"><span class="bar-lab">Meia Praia <i>2 quartos</i></span><span class="bar-track"><span class="bar-fill" style="--w:39.6%"></span></span><span class="bar-val">5,50%</span></div>
+          <div class="bar-row"><span class="bar-lab">Centro <i>3 quartos</i></span><span class="bar-track"><span class="bar-fill" style="--w:29.2%"></span></span><span class="bar-val">4,06%</span></div>
+          <div class="bar-row"><span class="bar-lab">Meia Praia <i>3 quartos</i></span><span class="bar-track"><span class="bar-fill" style="--w:28.6%"></span></span><span class="bar-val">3,97%</span></div>
+          <div class="bar-row"><span class="bar-lab">Meia Praia <i>4+ quartos</i></span><span class="bar-track"><span class="bar-fill" style="--w:19.9%"></span></span><span class="bar-val">2,77%</span></div>
+        </div>
+        <p class="ruler-foot">A linha âmbar é o CDI de 13,90% a.a. (Copom, 05/08/2026). Nenhuma célula
+        do mercado a alcança. As barras são retorno operacional líquido de comissão, manutenção,
+        condomínio e IPTU — antes de imposto de renda e sem contar valorização.</p>
+      </div>
+
+      <div class="hazard">
+        <span class="hazard-tag">Tese interna · rejeitada</span>
+        <h3>“Studios/1 quarto no Centro são a aposta mais eficiente”</h3>
+        <p>Os dados não sustentam. A tese acerta o bairro e erra a tipologia — e a premissa
+        central é falsa: <strong>o compacto é o metro quadrado mais caro da cidade</strong>,
+        +60,5% acima de 2 quartos no Centro. Ele vende mais rápido, mas você paga essa
+        vantagem na compra, e paga mais do que ela vale.</p>
+      </div>
+
+      <div class="buoybox">
+        <span class="t">O enquadramento honesto</span>
+        <p>Comprar short stay em Itapema hoje só se justifica como <strong>aposta em valorização
+        do imóvel</strong> — não como investimento em renda. Seriam necessários ~8,3% a.a. de
+        valorização só para empatar com o CDI, e esta base é a fotografia de um momento:
+        não permite avaliar valorização.</p>
+      </div>
+
+      <h3 class="sub">O universo analisado</h3>
+      <div class="facts">
+        <div class="fact"><span class="k">Anúncios de Airbnb</span><span class="v num">4.441</span></div>
+        <div class="fact"><span class="k">Com dados de preço</span><span class="v num">1.005 <small>22,6%</small></span></div>
+        <div class="fact"><span class="k">Com pickup válido</span><span class="v num">578</span></div>
+        <div class="fact"><span class="k">Apartamentos à venda</span><span class="v num">5.865</span></div>
+      </div>
+      <p class="tnote">Período coberto: estadias de 06/01 a 20/04/2025, a partir de 3 capturas de preço.
+      Não há inverno na base, nem reservas realizadas.</p>
+    </section>
+
+    <!-- ================================================= PERFIL -->
+    <section class="sheet" id="perfil">
+      <div class="eyebrow">01 · Perfil do imóvel</div>
+      <h2 class="sh">O compacto vende mais rápido<br>e ainda assim perde.</h2>
+      <p class="lede">Por número de quartos, o compacto tem o maior pickup da cidade — 15,6%.
+      Mas o ADR mais baixo anula a vantagem, e o preço de compra por metro quadrado a inverte.</p>
+
+      <div class="tw">
+        <table>
+          <caption>Receita por faixa de quartos · cidade toda</caption>
+          <thead><tr><th>Faixa</th><th class="n">n</th><th class="n">ADR</th><th class="n">Pickup</th><th class="n">RevPAN</th><th class="n">Ocup. fev</th></tr></thead>
+          <tbody>
+            <tr><td>4+ quartos</td><td class="n">37</td><td class="n">R$ 946</td><td class="n">11,3%</td><td class="n">R$ 107</td><td class="n">47,1%</td></tr>
+            <tr><td>3 quartos</td><td class="n">270</td><td class="n">R$ 650</td><td class="n">13,7%</td><td class="n">R$ 89</td><td class="n">48,6%</td></tr>
+            <tr><td>0–1 (compacto)</td><td class="n">87</td><td class="n">R$ 471</td><td class="n">15,6%</td><td class="n">R$ 73</td><td class="n">45,5%</td></tr>
+            <tr><td>2 quartos</td><td class="n">184</td><td class="n">R$ 457</td><td class="n">14,2%</td><td class="n">R$ 65</td><td class="n">51,7%</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="tnote">Atenção à leitura: esta tabela é de <em>receita</em>, e 2 quartos aparece em último.
+      A recomendação de 2 quartos vem do <strong>retorno sobre o capital</strong> — o imóvel grande
+      gera mais receita, mas custa desproporcionalmente mais para comprar.</p>
+
+      <h3 class="sub">Tipo de imóvel</h3>
+      <div class="tw">
+        <table>
+          <caption>Apartamento contra casa</caption>
+          <thead><tr><th>Tipo</th><th class="n">n</th><th class="n">ADR</th><th class="n">Pickup</th><th class="n">RevPAN</th></tr></thead>
+          <tbody>
+            <tr class="hi"><td>Apartamento</td><td class="n">567</td><td class="n">R$ 546</td><td class="n">14,1%</td><td class="n">R$ 77</td></tr>
+            <tr><td>Casa</td><td class="n">11</td><td class="n">R$ 440</td><td class="n">10,9%</td><td class="n">R$ 48</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="tnote">Casa tem amostra fraca (n=11) — não é prudente concluir muito dela.</p>
+
+      <h3 class="sub">Tipo de anúncio</h3>
+      <p>A base <strong>não tem</strong> a coluna de tipo de acomodação (imóvel inteiro ou quarto
+      privado). Usei os marcadores operacionais como proxy. Controlando bairro, tipologia,
+      capacidade e reputação, aparecem duas estratégias opostas convivendo no mesmo mercado:</p>
+
+      <div class="facts">
+        <div class="fact"><span class="k">Operação profissional · ADR</span><span class="v good">+26,1%</span></div>
+        <div class="fact warn"><span class="k">Operação profissional · ocupação</span><span class="v">−8,4 pp</span></div>
+        <div class="fact"><span class="k">Superhost · ADR</span><span class="v">−1,2%</span></div>
+        <div class="fact good"><span class="k">Superhost · ocupação</span><span class="v">+5,0 pp</span></div>
+      </div>
+      <p class="tnote">O profissional cobra mais e ocupa menos; o superhost faz o oposto.
+      O efeito líquido sobre a receita é modesto.</p>
+
+      <div class="buoybox">
+        <span class="t">Perfil vencedor</span>
+        <p>Apartamento de <strong>2 quartos, ~85 m², operado profissionalmente</strong>.</p>
+      </div>
+    </section>
+
+    <!-- ================================================= LOCALIZAÇÃO -->
+    <section class="sheet" id="local">
+      <div class="eyebrow">02 · Localização</div>
+      <h2 class="sh">Meia Praia lidera em receita.<br>Nenhum bairro lidera em retorno.</h2>
+      <p class="lede">Meia Praia é o melhor bairro em receita e o maior mercado — 2.860 dos 4.441
+      anúncios, contra 657 do Centro. O Centro não é o principal mercado de Itapema, o que já
+      contraria a intuição da tese interna.</p>
+
+      <div class="tw">
+        <table>
+          <caption>Ranking de bairros · n ≥ 20</caption>
+          <thead><tr><th>Bairro</th><th class="n">n</th><th class="n">ADR</th><th class="n">Pickup</th><th class="n">RevPAN</th><th class="n">Ocup. fev</th><th class="n">RevPAN ocup.</th></tr></thead>
+          <tbody>
+            <tr class="hi"><td>Meia Praia</td><td class="n">367</td><td class="n">R$ 599</td><td class="n">14,0%</td><td class="n">R$ 84</td><td class="n">49,9%</td><td class="n">R$ 299</td></tr>
+            <tr><td>Centro</td><td class="n">145</td><td class="n">R$ 498</td><td class="n">14,8%</td><td class="n">R$ 74</td><td class="n">46,8%</td><td class="n">R$ 233</td></tr>
+            <tr><td>Morretes</td><td class="n">48</td><td class="n">R$ 464</td><td class="n">12,0%</td><td class="n">R$ 56</td><td class="n">52,5%</td><td class="n">R$ 244</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="tnote">O ranking não é robusto entre Centro e Morretes: por RevPAN de pickup o Centro é 2º;
+      por RevPAN de ocupação, o Morretes. Meia Praia lidera nas duas.</p>
+
+      <h3 class="sub">Controlando a tipologia</h3>
+      <div class="tw">
+        <table>
+          <caption>RevPAN por bairro × faixa de quartos</caption>
+          <thead><tr><th>Faixa</th><th class="n">Centro</th><th class="n">Meia Praia</th><th class="n">Morretes</th></tr></thead>
+          <tbody>
+            <tr class="hi"><td>2 quartos</td><td class="n">R$ 91 <i>(47)</i></td><td class="n">R$ 66 <i>(90)</i></td><td class="n">R$ 46 <i>(36)</i></td></tr>
+            <tr><td>3 quartos</td><td class="n">R$ 88 <i>(27)</i></td><td class="n">R$ 91 <i>(230)</i></td><td class="n">R$ 111 <span class="tag">n=9</span></td></tr>
+            <tr><td>0–1 compacto</td><td class="n">R$ 66 <i>(69)</i></td><td class="n">R$ 84 <span class="tag">n=17</span></td><td class="n">R$ 157 <span class="tag">n=1</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="tnote">Em receita, o Centro ganha claramente em 2 quartos. Mas receita não é retorno:
+      o Centro também é o bairro mais caro para comprar, e quando o preço entra na conta a vantagem
+      desaparece — ver a seção de retorno.</p>
+
+      <h3 class="sub">Duas correções que mudaram o mapa</h3>
+      <ol class="ev">
+        <li><b>Andorinha e Castelo Branco são sub-áreas de Meia Praia.</b> O VivaReal não tem
+          latitude nem longitude, então li o bairro citado no próprio título e URL: o texto diz
+          “meia praia” em <strong>91,7%</strong> e <strong>94,3%</strong> dos casos. Isso resolveu
+          um ponto cego de 19% do mercado de venda.</li>
+        <li><b>O rótulo de bairro é confiável do lado da receita.</b> Com as coordenadas do Mesh,
+          75% dos anúncios rotulados “Centro” estão a menos de 0,46 km do centroide. Recalculando o
+          RevPAN do compacto por raio geográfico em vez de rótulo: R$ 62 contra R$ 63. Idênticos.</li>
+      </ol>
+    </section>
+
+    <!-- ================================================= DRIVERS -->
+    <section class="sheet" id="drivers">
+      <div class="eyebrow">03 · O que explica a receita</div>
+      <h2 class="sh">O imóvel explica o preço.<br>A operação explica a venda.</h2>
+      <p class="lede">RevPAN é preço × demanda, e os dois lados respondem a coisas diferentes.
+      Separei em modelos distintos, com validação repetida (5 folds × 10 repetições), controle
+      positivo e controle negativo.</p>
+
+      <div class="tw">
+        <table>
+          <caption>R² fora da amostra · melhor modelo por alvo</caption>
+          <thead><tr><th>Alvo</th><th>Melhor modelo</th><th class="n">R²</th><th class="n">Folds &gt; 0</th></tr></thead>
+          <tbody>
+            <tr class="hi"><td>ADR <span class="tag" style="color:var(--safe)">controle positivo</span></td><td>RandomForest</td><td class="n">0,431</td><td class="n">100%</td></tr>
+            <tr><td>Ocupação de fevereiro</td><td>Ridge</td><td class="n">0,078</td><td class="n">100%</td></tr>
+            <tr><td>RevPAN (via ocupação)</td><td>Ridge</td><td class="n">0,060</td><td class="n">80%</td></tr>
+            <tr><td>RevPAN (via pickup)</td><td>Ridge</td><td class="n">0,008</td><td class="n">70%</td></tr>
+            <tr><td>Pickup ajustado</td><td>Ridge</td><td class="n">−0,002</td><td class="n">60%</td></tr>
+            <tr class="bad"><td>Alvo embaralhado <span class="tag">piso por acaso</span></td><td>Ridge</td><td class="n">−0,012</td><td class="n">0%</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="buoybox">
+        <span class="t">Uma correção registrada</span>
+        <p>Uma versão anterior desta análise reportou R² negativo (−0,25) para o pickup e concluiu
+        “pior que chutar a média”. Estava errado: era <strong>overfitting do Gradient Boosting</strong>,
+        não ausência de fenômeno. Com modelos regularizados o valor sobe para ≈0, e a ocupação
+        revela sinal real — pequeno, mas positivo em 100% dos folds. A leitura correta é
+        <strong>“explica pouco”</strong>, numa razão de ~5:1 entre preço e demanda.</p>
+      </div>
+
+      <h3 class="sub">O que faz cobrar mais caro</h3>
+      <div class="tw">
+        <table>
+          <caption>Coeficientes padronizados sobre log(ADR) · significativos a 5%</caption>
+          <thead><tr><th>Variável</th><th class="n">Efeito</th><th class="n">p</th></tr></thead>
+          <tbody>
+            <tr><td>Operação profissional</td><td class="n">+0,111</td><td class="n">0,002</td></tr>
+            <tr><td>Nº de hóspedes</td><td class="n">+0,100</td><td class="n">&lt;0,001</td></tr>
+            <tr><td>Nº de quartos</td><td class="n">+0,093</td><td class="n">0,003</td></tr>
+            <tr><td>Nº de banheiros</td><td class="n">+0,091</td><td class="n">&lt;0,001</td></tr>
+            <tr class="bad"><td>Nº de reviews (log)</td><td class="n">−0,068</td><td class="n">&lt;0,001</td></tr>
+            <tr><td>Vista para o mar</td><td class="n">+0,059</td><td class="n">&lt;0,001</td></tr>
+            <tr><td>Star rating</td><td class="n">+0,042</td><td class="n">0,003</td></tr>
+            <tr><td>Nº de fotos</td><td class="n">+0,038</td><td class="n">0,040</td></tr>
+            <tr><td>Beira-mar</td><td class="n">+0,032</td><td class="n">0,031</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="tnote">O coeficiente negativo de reviews é o achado contraintuitivo: anúncio com muito
+      review cobra <em>menos</em>. Leitura provável — quem acumula review é quem vende volume com
+      preço competitivo.</p>
+
+      <div class="callout">Elevador, churrasqueira, piscina e superhost aparecem consistentes na leitura
+      direta por medianas, mas <strong>nenhum sobrevive ao controle multivariado</strong>.
+      Não recomendo decidir compra por amenidade.</div>
+    </section>
+
+    <!-- ================================================= RETORNO -->
+    <section class="sheet" id="retorno">
+      <div class="eyebrow">04 · Retorno</div>
+      <h2 class="sh">A conta que o investimento<br>precisa passar antes do bairro.</h2>
+      <p class="lede">A matriz cruza receita do Airbnb com preço de compra do VivaReal, por
+      bairro × tipologia. Só entram células com n ≥ 20 dos dois lados.</p>
+
+      <div class="tw">
+        <table>
+          <caption>Matriz de investimento · base deduplicada · cenário 55%</caption>
+          <thead><tr><th>Bairro / tipologia</th><th class="n">n Airbnb</th><th class="n">n VivaReal</th><th class="n">ADR</th><th class="n">Preço</th><th class="n">Investimento</th><th class="n">Líquido/ano</th><th class="n">ROI</th><th class="n">Payback</th></tr></thead>
+          <tbody>
+            <tr class="hi"><td>Morretes / 2q</td><td class="n">36</td><td class="n">731</td><td class="n">R$ 430</td><td class="n">R$ 795 mil</td><td class="n">R$ 937 mil</td><td class="n">R$ 53,1 mil</td><td class="n">5,67%</td><td class="n">17,6 a</td></tr>
+            <tr class="hi"><td>Centro / 2q</td><td class="n">47</td><td class="n">66</td><td class="n">R$ 604</td><td class="n">R$ 1,21 mi</td><td class="n">R$ 1,40 mi</td><td class="n">R$ 78,2 mil</td><td class="n">5,57%</td><td class="n">18,0 a</td></tr>
+            <tr class="hi"><td>Meia Praia / 2q</td><td class="n">90</td><td class="n">314</td><td class="n">R$ 450</td><td class="n">R$ 1,05 mi</td><td class="n">R$ 1,24 mi</td><td class="n">R$ 68,0 mil</td><td class="n">5,50%</td><td class="n">18,2 a</td></tr>
+            <tr><td>Centro / 3q</td><td class="n">27</td><td class="n">366</td><td class="n">R$ 699</td><td class="n">R$ 2,10 mi</td><td class="n">R$ 2,40 mi</td><td class="n">R$ 97,5 mil</td><td class="n">4,06%</td><td class="n">24,6 a</td></tr>
+            <tr><td>Meia Praia / 3q</td><td class="n">230</td><td class="n">2.018</td><td class="n">R$ 656</td><td class="n">R$ 1,80 mi</td><td class="n">R$ 2,08 mi</td><td class="n">R$ 82,7 mil</td><td class="n">3,97%</td><td class="n">25,2 a</td></tr>
+            <tr><td>Meia Praia / 4+</td><td class="n">30</td><td class="n">1.335</td><td class="n">R$ 899</td><td class="n">R$ 3,36 mi</td><td class="n">R$ 3,81 mi</td><td class="n">R$ 105,5 mil</td><td class="n">2,77%</td><td class="n">36,1 a</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="tnote">As três primeiras linhas são empate técnico. O que a tabela decide com segurança é
+      o degrau entre 2 quartos (≈5,6%) e 3 quartos (≈4,0%).</p>
+
+      <h3 class="sub">A ordem não muda com a premissa de sazonalidade</h3>
+      <div class="tw">
+        <table>
+          <caption>Sensibilidade ao fator anual de realização</caption>
+          <thead><tr><th>Célula</th><th class="n">40% conservador</th><th class="n">55% base</th><th class="n">70% otimista</th></tr></thead>
+          <tbody>
+            <tr class="hi"><td>Morretes / 2q</td><td class="n">3,98%</td><td class="n">5,67%</td><td class="n">7,36%</td></tr>
+            <tr class="hi"><td>Centro / 2q</td><td class="n">3,92%</td><td class="n">5,57%</td><td class="n">7,22%</td></tr>
+            <tr class="hi"><td>Meia Praia / 2q</td><td class="n">3,86%</td><td class="n">5,50%</td><td class="n">7,15%</td></tr>
+            <tr><td>Centro / 3q</td><td class="n">2,85%</td><td class="n">4,06%</td><td class="n">5,26%</td></tr>
+            <tr><td>Meia Praia / 3q</td><td class="n">2,78%</td><td class="n">3,97%</td><td class="n">5,17%</td></tr>
+            <tr><td>Meia Praia / 4+</td><td class="n">1,92%</td><td class="n">2,77%</td><td class="n">3,62%</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <hr class="rule">
+
+      <div class="eyebrow">O teste decisivo</div>
+      <h3 class="sub" style="margin-top:6px">Nenhuma alavanca fecha o gap contra o CDI</h3>
+      <p>Para Centro/2q chegar aos 13,90% do CDI, mantendo os demais custos:</p>
+
+      <div class="tw">
+        <table>
+          <caption>O que precisaria acontecer</caption>
+          <thead><tr><th>Alavanca</th><th>Necessário</th><th>Viável?</th></tr></thead>
+          <tbody>
+            <tr class="bad"><td>Só ocupação</td><td class="n">fator 55% → 130,6%</td><td>Impossível (&gt;100%)</td></tr>
+            <tr class="bad"><td>Só ADR</td><td class="n">R$ 604 → R$ 1.433 (+137%)</td><td>p90 da cidade é R$ 700</td></tr>
+            <tr class="bad"><td>Só preço de compra</td><td class="n">R$ 1,21 mi → R$ 413 mil (−66%)</td><td>Irrealista</td></tr>
+            <tr class="bad"><td>+20% ADR <em>e</em> +20% ocupação</td><td class="n">ROI 8,24%</td><td>Ainda 5,7 pp abaixo</td></tr>
+            <tr class="bad"><td>Prêmio de operação profissional</td><td class="n">ROI 6,52%</td><td>Fecha só 11% do gap</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="facts">
+        <div class="fact"><span class="k">Centro/2q · operação por ano</span><span class="v num">R$ 78,2<small> mil</small></span></div>
+        <div class="fact warn"><span class="k">Mesmo capital no CDI</span><span class="v num">R$ 195,0<small> mil</small></span></div>
+        <div class="fact warn"><span class="k">Fração do CDI entregue</span><span class="v">40%</span></div>
+        <div class="fact"><span class="k">Valorização necessária p/ empatar</span><span class="v num">8,3%<small> a.a.</small></span></div>
+      </div>
+
+      <div class="buoybox">
+        <span class="t">A decisão</span>
+        <p>Comprar apartamentos de <strong>2 quartos, ~85 m²</strong>. A tipologia é a decisão
+        defensável; o bairro é indiferente entre Centro, Meia Praia e Morretes — escolha por
+        estoque disponível e preço negociado, não por RevPAN. <strong>Morretes</strong> exige o
+        menor capital por unidade; <strong>Meia Praia</strong> tem de longe o maior estoque
+        (3.710 imóveis) e a maior ocupação; <strong>Centro</strong> tem o maior RevPAN em 2 quartos,
+        mas só 66 unidades à venda.</p>
+      </div>
+
+      <p class="note"><strong>Premissas declaradas</strong> (escolhas minhas, não vêm dos dados):
+      fator anual de realização em cenários de 40/55/70%, que absorve a sazonalidade de ocupação
+      e de preço de uma vez — o ADR da base é de janeiro. Aquisição 5%, mobiliar R$ 1.500/m²,
+      comissão de canal 15%, manutenção 10%, condomínio e IPTU do próprio VivaReal.
+      Não inclui imposto de renda, custo de capital nem valorização.</p>
+    </section>
+
+    <!-- ================================================= TESE -->
+    <section class="sheet" id="tese">
+      <div class="eyebrow">05 · Tese dos compactos no Centro</div>
+
+      <div class="hazard">
+        <span class="hazard-tag">Veredito · rejeitada</span>
+        <h3>Mantenha o Centro se quiser. Troque studio por 2 quartos.</h3>
+        <p>A tese junta duas afirmações — tamanho e localização. Testei separadamente e li
+        “eficiente” como <strong>retorno por real investido</strong>, não receita absoluta,
+        senão ela seria refutada por construção. A auditoria de qualidade de dados
+        <strong>fortaleceu</strong> a rejeição, não a enfraqueceu.</p>
+      </div>
+
+      <h3 class="sub">O que a tese acerta</h3>
+      <p>O compacto <strong>realmente vende mais rápido</strong>: pickup de 15,6% contra 14,2% da
+      cidade, o maior de todas as faixas. Essa parte da intuição estava correta.</p>
+
+      <h3 class="sub">Onde ela quebra</h3>
+      <ol class="ev">
+        <li><b>A premissa central é falsa.</b> O compacto não é barato — é o metro quadrado mais
+          caro da cidade, e o prêmio se repete nos três bairros com significância estatística.</li>
+        <li><b>Perde em receita e em retorno.</b> Dentro do Centro: RevPAN de R$ 66 contra R$ 91 de
+          2 quartos. ROI de 4,82% contra 5,57%.</li>
+        <li><b>Não muda com a métrica.</b> Entre 12 células, “Centro / compacto” fica em
+          <strong>10º</strong> por RevPAN de pickup, <strong>12º</strong> por RevPAN de ocupação,
+          <strong>11º</strong> por ADR puro e <strong>7º</strong> por ROI.</li>
+        <li><b>Não escala.</b> Existem 91 compactos à venda em toda Itapema — 1,6% do mercado —
+          contra 1.382 de 2 quartos. No Centro, <strong>10 unidades</strong>. Para uma empresa que
+          gere 3.000 imóveis, isso não é uma estratégia.</li>
+      </ol>
+
+      <div class="tw">
+        <table>
+          <caption>Prêmio de preço por m² do compacto sobre 2 quartos</caption>
+          <thead><tr><th>Bairro</th><th class="n">Compacto</th><th class="n">2 quartos</th><th class="n">Prêmio antes da dedup</th><th class="n">Prêmio corrigido</th></tr></thead>
+          <tbody>
+            <tr class="bad"><td>Centro</td><td class="n">R$ 21.964 <i>(10)</i></td><td class="n">R$ 13.681 <i>(66)</i></td><td class="n">+42,0%</td><td class="n">+60,5%</td></tr>
+            <tr class="bad"><td>Meia Praia</td><td class="n">R$ 19.250 <i>(43)</i></td><td class="n">R$ 12.235 <i>(314)</i></td><td class="n">+65,7%</td><td class="n">+57,3%</td></tr>
+            <tr class="bad"><td>Morretes</td><td class="n">R$ 13.083 <i>(23)</i></td><td class="n">R$ 11.843 <i>(731)</i></td><td class="n">+11,9%</td><td class="n">+10,5%</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="tnote">O prêmio subiu no Centro justamente porque os imóveis baratos que o mascaravam
+      não eram do Centro — ver a auditoria abaixo.</p>
+
+      <h3 class="sub">A auditoria dos 16 anúncios</h3>
+      <p>O elo frágil da análise era o preço de compra do compacto no Centro, com n=16.
+      Auditei os 16 um a um:</p>
+
+      <div class="tw">
+        <table>
+          <caption>O que a amostra realmente era</caption>
+          <thead><tr><th>Problema</th><th>Achado</th></tr></thead>
+          <tbody>
+            <tr><td>Duplicata física</td><td>Os 16 anúncios são <strong>12 imóveis distintos</strong>. Um aparece 3 vezes, com corretores e URLs diferentes.</td></tr>
+            <tr><td>Bairro errado</td><td><strong>5 dos 16 dizem “MEIA PRAIA” no próprio título</strong> — e são justamente os baratos.</td></tr>
+            <tr><td>Tipologia errada</td><td>1 anúncio de 140 m² com <code>bedrooms=1</code> e título “Apartamento 03 dormitórios”.</td></tr>
+            <tr class="bad"><td>Efeito na base inteira</td><td><strong>18,2% do VivaReal era repetição.</strong> Isso sozinho inverteu o 1º lugar do ranking de ROI.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3 class="sub">E o “garimpo”? Também não se sustenta</h3>
+      <p>Uma versão anterior sugeriu que a tese poderia se salvar comprando ~22% abaixo do preço
+      pedido. <strong>Retirei essa formulação</strong>, por duas razões:</p>
+
+      <div class="facts">
+        <div class="fact"><span class="k">p25 do preço · estimativa</span><span class="v num">R$ 686<small> mil</small></span></div>
+        <div class="fact warn"><span class="k">IC 95% do p25</span><span class="v num" style="font-size:20px">R$ 650–890 mil</span></div>
+        <div class="fact warn"><span class="k">P(p25 ≤ ponto de virada)</span><span class="v">59,4%</span></div>
+        <div class="fact warn"><span class="k">Capturas do VivaReal</span><span class="v num">1</span></div>
+      </div>
+      <p class="tnote">Uma estratégia que depende de uma estimativa com 59% de chance de estar do lado
+      certo não é uma estratégia. E o VivaReal tem <strong>uma única data de captura</strong> —
+      é fotografia, não série: não há como medir reposição de estoque nem frequência de barganhas.
+      Qualquer número sobre isso seria inventado.</p>
+
+      <h3 class="sub">Intervalos de confiança dentro do Centro</h3>
+      <div class="tw">
+        <table>
+          <caption>RevPAN com IC 95% por bootstrap · Centro</caption>
+          <thead><tr><th>Faixa</th><th class="n">n</th><th class="n">ADR</th><th class="n">RevPAN</th><th class="n">IC 95%</th></tr></thead>
+          <tbody>
+            <tr class="bad"><td>0–1 (compacto)</td><td class="n">69</td><td class="n">R$ 440</td><td class="n">R$ 66</td><td class="n">54 – 80</td></tr>
+            <tr class="hi"><td>2 quartos</td><td class="n">47</td><td class="n">R$ 604</td><td class="n">R$ 91</td><td class="n">65 – 117</td></tr>
+            <tr><td>3 quartos</td><td class="n">27</td><td class="n">R$ 699</td><td class="n">R$ 88</td><td class="n">53 – 128</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="tnote">Honestidade sobre a força da evidência: os intervalos <strong>se sobrepõem</strong>.
+      A diferença de <em>receita</em> entre compacto e 2 quartos não é estatisticamente decisiva.
+      O que decide a rejeição é o preço por m², o estoque e o retorno — não a receita.</p>
+
+      <div class="callout">A tese errava também na direção do bairro: em compactos, o Centro
+      (RevPAN R$ 66) perde para Meia Praia (R$ 84). Se a aposta fosse mesmo em compactos,
+      o Centro não seria o lugar.</div>
+    </section>
+
+    <!-- ================================================= LIMITES -->
+    <section class="sheet" id="limites">
+      <div class="eyebrow">06 · Limites</div>
+      <h2 class="sh">O que esta análise<br>não consegue afirmar.</h2>
+      <p class="lede">Em ordem de gravidade. Nenhum destes foi descoberto depois — todos estão
+      declarados no relatório e vários moldaram a metodologia desde o plano inicial.</p>
+
+      <ol class="ev">
+        <li><b>Não há receita realizada na base.</b> Toda demanda é inferida de disponibilidade
+          entre capturas. “Indisponível” pode ser reserva <em>ou bloqueio do proprietário</em> —
+          não são separáveis. A ocupação está superestimada em magnitude desconhecida.</li>
+        <li><b>Sem inverno.</b> A janela é 06/01 a 20/04/2025, numa cidade de praia com sazonalidade
+          forte. Nenhum número anual aqui é observado — todos vêm dos cenários declarados.</li>
+        <li><b>O ROI cruza duas populações que podem não ser equivalentes.</b> A receita vem de
+          anúncios maduros e ativos (27 reviews em média, contra 3,8 dos sem preço); o preço vem de
+          imóveis à venda hoje. Não há chave ligando um anúncio de Airbnb ao seu equivalente no
+          VivaReal — o cruzamento é por bairro × nº de quartos, assumindo comparabilidade dentro da
+          célula. É a premissa mais forte de toda a análise, e não é verificável.</li>
+        <li><b>A base de venda tinha 18,2% de duplicatas físicas.</b> Corrigido deduplicando por
+          conteúdo, não só por URL. Não há garantia de que tenha capturado todos os casos.</li>
+        <li><b>O bairro no VivaReal vem de texto livre.</b> A concordância entre rótulo e título é de
+          79,5% — cerca de 1 em 5 anúncios tem divergência que não foi auditada individualmente.
+          Só os 16 casos do compacto no Centro receberam auditoria manual.</li>
+        <li><b>Apenas 22,6% dos anúncios têm preço</b>, e a seleção não é aleatória. Assumi isso
+          deliberadamente: anúncio morto não é benchmark. Mas o retorno estimado é o de um operador
+          que já alcançou maturidade, não o do primeiro ano.</li>
+        <li><b>Não há dados de valorização imobiliária</b> — que é justamente a variável decisiva de
+          todo o caso de investimento. Esta é a maior lacuna da base em relação à decisão que ela
+          pretende informar.</li>
+      </ol>
+
+      <h3 class="sub">Com mais uma semana</h3>
+      <ol class="ev">
+        <li><b>Séries históricas de preço por m² em Itapema.</b> Mudariam a resposta final —
+          não a análise de perfil.</li>
+        <li><b>Mais capturas de preço.</b> Três snapshots em 14 dias é a maior limitação
+          metodológica. Com capturas semanais por 3 meses, o pickup vira série.</li>
+        <li><b>Auditar os ~20% de divergência de rótulo de bairro.</b> O erro que inverteu o
+          ranking veio exatamente daí.</li>
+        <li><b>Investigar Morretes/3 quartos.</b> R$ 849 mil por 70 m² com ADR de R$ 650 é a única
+          célula que chegaria perto do CDI — com n=9, não dá para recomendar, mas é a primeira
+          coisa a checar.</li>
+      </ol>
+    </section>
+
+    <div class="foot">
+      Fonte da recomendação: <a href="../relatorio.md">relatorio.md</a> ·
+      Código: <a href="../analise/">/analise</a> ·
+      Processo com IA: <a href="../ai-log/">/ai-log</a><br>
+      Benchmark: Selic meta 14,00% e CDI 13,90% (Copom, 05/08/2026).
+      Esta página é um complemento de leitura — o relatório em Markdown é a fonte.
+    </div>
+
+  </main>
+  </div>
+</div>
+
+<script>
+(function(){
+  var sheets = Array.prototype.slice.call(document.querySelectorAll('.sheet'));
+  var links  = Array.prototype.slice.call(document.querySelectorAll('.navlink'));
+  var mob    = document.querySelector('.mobnav');
+
+  // espelha o rail na nav mobile, sem duplicar o conteúdo à mão
+  links.forEach(function(l){
+    var b = document.createElement('button');
+    b.textContent = l.textContent.replace(/^\s*\d+\s*/, '').trim();
+    b.setAttribute('data-go', l.dataset.go);
+    b.setAttribute('aria-current', l.getAttribute('aria-current') || 'false');
+    mob.appendChild(b);
+  });
+  var all = links.concat(Array.prototype.slice.call(mob.querySelectorAll('button')));
+
+  function show(id, push){
+    sheets.forEach(function(s){ s.classList.toggle('on', s.id === id); });
+    all.forEach(function(b){ b.setAttribute('aria-current', b.dataset.go === id ? 'true' : 'false'); });
+    var act = mob.querySelector('[data-go="'+id+'"]');
+    if (act && act.scrollIntoView) act.scrollIntoView({block:'nearest', inline:'center', behavior:'smooth'});
+    window.scrollTo({top:0, behavior: push ? 'smooth' : 'auto'});
+    if (push && history.replaceState) history.replaceState(null, '', '#'+id);
+    document.title = 'Itapema/SC — ' + (act ? act.textContent : 'Recomendação') + ' | Seazone';
+  }
+
+  all.forEach(function(b){
+    b.addEventListener('click', function(){ show(b.dataset.go, true); });
+  });
+
+  // navegação por teclado entre seções
+  document.addEventListener('keydown', function(e){
+    if (e.metaKey || e.ctrlKey || e.altKey) return;
+    if (/^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement.tagName)) return;
+    var ids = sheets.map(function(s){ return s.id; });
+    var cur = ids.indexOf((document.querySelector('.sheet.on')||{}).id);
+    if (e.key === 'ArrowRight' && cur < ids.length-1) { show(ids[cur+1], true); e.preventDefault(); }
+    if (e.key === 'ArrowLeft'  && cur > 0)            { show(ids[cur-1], true); e.preventDefault(); }
+  });
+
+  var start = (location.hash || '').replace('#','');
+  show(sheets.some(function(s){ return s.id === start; }) ? start : 'resumo', false);
+})();
+</script>
+</body>
+</html>
