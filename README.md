@@ -37,8 +37,8 @@ recomendar perfil de imóvel, localização e retorno de investimento.
 ## A recomendação em três frases
 
 1. **Apartamento de 2 quartos, ~85 m².** A tipologia é a conclusão firme: o
-   degrau de retorno entre 2 quartos (≈5,6%) e 3 quartos (≈4,0%) é 4× maior que
-   qualquer diferença entre bairros.
+   degrau de retorno entre 2 quartos (≈5,6%) e 3 quartos (≈4,0%) é de 1,61 pp,
+   **quase 10× maior** que os 0,17 pp que separam os bairros.
 2. **O bairro não é decidível com estes dados.** Morretes 5,67%, Centro 5,57%,
    Meia Praia 5,50% — empate técnico depois de corrigir 18,2% de duplicatas
    físicas na base de venda.

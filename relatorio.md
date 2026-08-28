@@ -316,7 +316,8 @@ sobrevive ao controle multivariado**. Não recomendo decidir compra por amenidad
 **As três primeiras linhas são um empate técnico.** 0,17 ponto percentual separa
 Morretes de Meia Praia — muito abaixo da incerteza das estimativas. O que a
 tabela decide com segurança é o **degrau entre 2 quartos (≈5,6%) e 3 quartos
-(≈4,0%)**, que é 4× maior que a diferença entre bairros.
+(≈4,0%)**: 1,61 ponto percentual, contra 0,17 pp de diferença entre bairros —
+**quase 10× maior**.
 
 Na versão anterior deste relatório, Centro/2q aparecia em 1º com 5,97%. A
 deduplicação física elevou o preço mediano do Centro/2q em 8,1%
@@ -618,8 +619,8 @@ erro de dado, ou é a melhor oportunidade da cidade.
 **O que os dados sustentam com firmeza:**
 
 1. **2 quartos é a tipologia certa.** O degrau de ROI entre 2 quartos (≈5,6%) e
-   3 quartos (≈4,0%) é 4× maior que qualquer diferença entre bairros, e persiste
-   nos três cenários de sazonalidade.
+   3 quartos (≈4,0%) é de 1,61 pp — **quase 10× maior** que os 0,17 pp que
+   separam os bairros, e persiste nos três cenários de sazonalidade.
 2. **A tese dos compactos no Centro está errada.** O compacto é o m² mais caro
    da cidade (+60,5% sobre 2 quartos no Centro), rende menos, e tem estoque de
    10 unidades. A auditoria de dados fortaleceu essa rejeição.
