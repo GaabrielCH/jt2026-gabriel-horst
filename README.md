@@ -1,4 +1,4 @@
-# 🎥 VÍDEO (3 min): [COLE AQUI O LINK DO GOOGLE DRIVE — TROCAR ANTES DE ENVIAR]
+# 🎥 VÍDEO (3 min): [https://drive.google.com/file/d/1WsFgwkpE6oR8g1dvJx7qS2a9eUTRuBxX/view?usp=sharing]
 
 > ⚠️ **Checklist antes de submeter:** trocar o placeholder acima pelo link real,
 > e conferir numa aba anônima que o vídeo abre com compartilhamento
