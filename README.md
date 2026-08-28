@@ -14,10 +14,11 @@ recomendar perfil de imóvel, localização e retorno de investimento.
 
 ## 👉 A resposta está em [`relatorio.md`](relatorio.md)
 
-> 💡 Prefere navegar visualmente? Há uma **versão em página única** da análise em
-> [`docs/index.html`](docs/index.html) — tabelas, navegação por seção e os dois
-> pontos que decidem a recomendação em destaque. Abre direto no navegador, sem
-> servidor. O Markdown continua sendo a fonte.
+> 💡 Prefere navegar visualmente? A análise também está publicada como página única:
+> **<https://gaabrielch.github.io/jt2026-gabriel-horst/>**
+> — tabelas, navegação por seção e os dois pontos que decidem a recomendação em
+> destaque. O fonte está em [`docs/index.html`](docs/index.html) e abre direto no
+> navegador, sem servidor. O Markdown continua sendo a fonte da recomendação.
 
 | Pergunta do desafio | Onde está |
 |---|---|
